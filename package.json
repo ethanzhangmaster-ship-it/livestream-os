@@ -20,6 +20,7 @@
     "test-error-handling": "ts-node src/error-handling/test-error-handling.ts",
     "test-monitoring": "ts-node src/monitoring/test-monitoring.ts",
     "test-obs-recording": "ts-node scripts/test-obs-recording-streaming.ts",
+    "test-douyin-webhook": "ts-node scripts/test-douyin-webhook.ts",
     "test:benchmark": "ts-node tests/performance/benchmark.ts",
     "test:stress": "ts-node tests/performance/stress.ts",
     "test:stability": "ts-node tests/performance/stability.ts",
