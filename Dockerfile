@@ -1,7 +1,8 @@
 # 多阶段构建
 
 # 阶段 1: 构建应用
-FROM node:20-alpine AS builder
+# 使用阿里云镜像加速
+FROM registry.cn-hangzhou.aliyuncs.com/library/node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -19,7 +20,8 @@ COPY . .
 RUN npm run build
 
 # 阶段 2: 生产镜像
-FROM node:20-alpine
+# 使用阿里云镜像加速
+FROM registry.cn-hangzhou.aliyuncs.com/library/node:20-alpine
 
 WORKDIR /app
 
