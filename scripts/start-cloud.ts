@@ -44,12 +44,12 @@ async function startCloud() {
     try {
       const body = req.body;
       
-      // 处理验证请求（包含 CHALLENGE 参数）
-      if (body.CHALLENGE) {
-        console.log(`[Douyin] 收到验证请求，CHALLENGE: ${body.CHALLENGE}`);
-        // 明确设置 Content-Type 并返回 JSON
+      // 处理验证请求（event: verify_webhook）
+      if (body.event === 'verify_webhook' && body.content?.challenge) {
+        console.log(`[Douyin] 收到验证请求，challenge: ${body.content.challenge}`);
+        // 返回小写的 challenge
         res.setHeader('Content-Type', 'application/json');
-        return res.send(JSON.stringify({ CHALLENGE: body.CHALLENGE }));
+        return res.send(JSON.stringify({ challenge: body.content.challenge }));
       }
       
       // 处理实际数据
