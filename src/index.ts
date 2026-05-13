@@ -100,7 +100,7 @@ export class LivestreamOS {
     }
     
     // 优化模块
-    this.knowledgeGraph = new KnowledgeGraph({ dbPath: 'data/knowledge.db' });
+    this.knowledgeGraph = new KnowledgeGraph();
     this.optimizer = new Optimizer();
     
     // 系统模块
@@ -128,7 +128,6 @@ export class LivestreamOS {
       console.log('[1/6] 初始化错误处理系统...');
       await this.errorHandling.initialize({
         obsAdapter: this.obsAdapter,
-        database: this.knowledgeGraph.getDB(),
         attentionBus: this.attentionBus,
       });
 

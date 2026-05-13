@@ -30,6 +30,42 @@ export interface ContextFingerprint {
   sessionPhase: 'early' | 'middle' | 'late';
 }
 
+/**
+ * 生成上下文指纹
+ */
+export function generateContextFingerprint(
+  attentionState: AttentionState,
+  intent: Intent,
+  sessionDuration: number
+): ContextFingerprint {
+  // 量化注意力密度
+  const attentionDensity = Math.floor(attentionState.density * 10) / 10;
+  
+  // 判断注意力模式
+  let attentionPattern = 'stable';
+  if (attentionState.momentum > 0.1) {
+    attentionPattern = 'rising';
+  } else if (attentionState.momentum < -0.1) {
+    attentionPattern = 'falling';
+  }
+  
+  // 判断会话阶段
+  let sessionPhase: 'early' | 'middle' | 'late' = 'middle';
+  if (sessionDuration < 300000) { // 5 分钟
+    sessionPhase = 'early';
+  } else if (sessionDuration > 1800000) { // 30 分钟
+    sessionPhase = 'late';
+  }
+  
+  return {
+    attentionDensity,
+    attentionPattern,
+    topic: attentionState.topic || 'general',
+    intentType: intent.type,
+    sessionPhase,
+  };
+}
+
 export interface KnowledgeGraphConfig {
   minSampleCount: number; // 最小样本数
   confidenceThreshold: number; // 置信度阈值
