@@ -1,0 +1,22 @@
+node_modules
+npm-debug.log
+dist
+.git
+.gitignore
+.env
+.env.*
+*.md
+!README.md
+.vscode
+.idea
+*.log
+coverage
+.nyc_output
+data
+logs
+*.ts
+!dist/**/*.js
+
+# 允许复制 node_modules 和 dist（用于 Docker 构建）
+!node_modules/**
+!dist/**

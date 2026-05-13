@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # Livestream OS 主应用
+  livestream-os:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: livestream-os
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # 监控仪表板
+    environment:
+      - NODE_ENV=production
+      - OBS_HOST=${OBS_HOST:-host.docker.internal}
+      - OBS_PORT=${OBS_PORT:-4455}
+      - OBS_PASSWORD=${OBS_PASSWORD:-}
+      - DOUYIN_API_KEY=${DOUYIN_API_KEY:-}
+      - DOUYIN_API_SECRET=${DOUYIN_API_SECRET:-}
+    volumes:
+      - ./data:/app/data # 持久化数据
+      - ./logs:/app/logs # 日志
+    networks:
+      - livestream-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080/api/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Redis（用于缓存和事件队列）
+  redis:
+    image: redis:7-alpine
+    container_name: livestream-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - livestream-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  # Prometheus（监控指标收集）
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: livestream-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - livestream-network
+
+  # Grafana（监控可视化）
+  grafana:
+    image: grafana/grafana:latest
+    container_name: livestream-grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=redis-datasource
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - livestream-network
+    depends_on:
+      - prometheus
+      - redis
+
+networks:
+  livestream-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  prometheus-data:
+  grafana-data:
