@@ -22,6 +22,7 @@
     "test-obs-recording": "ts-node scripts/test-obs-recording-streaming.ts",
     "test-obs-scene": "ts-node scripts/test-obs-scene-switch.ts",
     "test-douyin-webhook": "ts-node scripts/test-douyin-webhook.ts",
+    "test-phase1": "ts-node scripts/test-phase1-automation.ts",
     "test:benchmark": "ts-node tests/performance/benchmark.ts",
     "test:stress": "ts-node tests/performance/stress.ts",
     "test:stability": "ts-node tests/performance/stability.ts",

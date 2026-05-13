@@ -6,6 +6,7 @@
 
 import OBSWebSocket from 'obs-websocket-js';
 import { Action, Violation } from '../types';
+import { getMappedSceneName } from '../config/scene-mapping';
 
 export interface OBSAdapterConfig {
   host: string;
