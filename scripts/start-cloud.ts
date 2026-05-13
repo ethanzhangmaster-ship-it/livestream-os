@@ -39,7 +39,24 @@ async function startCloud() {
     });
   });
 
-  // 抖音直播数据回调
+  // 抖音直播数据回调 - GET 请求（验证）
+  app.get('/live_data_callback', (req: Request, res: Response) => {
+    const challenge = req.query.challenge as string;
+    console.log(`[Douyin] 收到验证请求，challenge: ${challenge}`);
+    
+    if (challenge) {
+      // 返回 challenge 参数进行验证
+      res.json({ challenge });
+    } else {
+      res.json({ 
+        status: 'ok', 
+        message: 'LivestreamOS callback endpoint',
+        timestamp: Date.now() 
+      });
+    }
+  });
+
+  // 抖音直播数据回调 - POST 请求（实际数据）
   app.post('/live_data_callback', async (req: Request, res: Response) => {
     try {
       const msgType = req.headers['x-msg-type'] as string;
