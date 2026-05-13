@@ -1,12 +1,32 @@
-# 生产镜像
+# 多阶段构建
+
+# 阶段 1: 构建应用
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# 复制 package 文件
+COPY package*.json ./
+
+# 使用国内镜像源安装依赖
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm install
+
+# 复制源代码
+COPY . .
+
+# 构建 TypeScript
+RUN npm run build
+
+# 阶段 2: 生产镜像
 FROM node:20-alpine
 
 WORKDIR /app
 
 # 复制构建产物和依赖
-COPY dist ./dist
-COPY node_modules ./node_modules
-COPY package.json ./
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
 
 # 创建非 root 用户
 RUN addgroup -g 1001 -S appuser && \
