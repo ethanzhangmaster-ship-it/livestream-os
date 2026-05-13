@@ -47,7 +47,9 @@ async function startCloud() {
       // 处理验证请求（包含 CHALLENGE 参数）
       if (body.CHALLENGE) {
         console.log(`[Douyin] 收到验证请求，CHALLENGE: ${body.CHALLENGE}`);
-        return res.json({ CHALLENGE: body.CHALLENGE });
+        // 明确设置 Content-Type 并返回 JSON
+        res.setHeader('Content-Type', 'application/json');
+        return res.send(JSON.stringify({ CHALLENGE: body.CHALLENGE }));
       }
       
       // 处理实际数据
