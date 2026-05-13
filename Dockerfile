@@ -11,8 +11,8 @@ RUN npm config set registry https://registry.npmmirror.com && \
     npm install && \
     npm run build
 
-# 暴露端口
-EXPOSE 3000 8080
+# 暴露端口（抖音云要求 8000）
+EXPOSE 8000
 
 # 启动应用
 CMD ["npm", "start"]
